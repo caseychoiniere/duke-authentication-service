@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'shoulda/matchers'
 
 describe Consumer, type: :model do
   subject() { FactoryGirl.create(:consumer) }
@@ -17,13 +16,17 @@ describe Consumer, type: :model do
 
   describe 'consumer.signed_token' do
     let (:user) { FactoryGirl.create(:user) }
+    let (:first_name) { Faker::Name.first_name }
+    let (:last_name) { Faker::Name.last_name }
     let(:display_name) { Faker::Name.name }
-    let(:mail) { Faker::Internet.email }
+    let(:email) { Faker::Internet.email }
     let(:scope) { Rails.application.config.default_scope }
     let (:token) { user.token(
         client_id: subject.uuid,
+        first_name: first_name,
+        last_name: last_name,
         display_name: display_name,
-        mail: mail,
+        email: email,
         scope: scope
       )
     }

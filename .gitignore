@@ -1,3 +1,4 @@
+docker/includes/instantclient
 *.rbc
 capybara-*.html
 .rspec
@@ -31,4 +32,4 @@ bower.json
 
 # Ignore all logfiles and tempfiles.
 /log/*
-!/log/.keep
+secrets.*.env

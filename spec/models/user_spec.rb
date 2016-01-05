@@ -1,10 +1,11 @@
 require 'rails_helper'
-require 'shoulda-matchers'
 
 RSpec.describe User, type: :model do
   subject { FactoryGirl.create(:user) }
+  let(:first_name) { Faker::Name.first_name }
+  let(:last_name) { Faker::Name.last_name}
   let(:display_name) { Faker::Name.name }
-  let(:mail) { Faker::Internet.email }
+  let(:email) { Faker::Internet.email }
   let(:scope) { Rails.application.config.default_scope }
   let(:min_secs) { 3 * 60 * 60 }
   let(:full_expire) { 4 * 60 * 60 }
@@ -12,7 +13,9 @@ RSpec.describe User, type: :model do
   let(:expected_credentials) { {
       uid: subject.uid,
       client_id: consumer.uuid,
-      mail: mail,
+      email: email,
+      first_name: first_name,
+      last_name: last_name,
       display_name: display_name,
       scope: scope
     }
@@ -25,7 +28,7 @@ RSpec.describe User, type: :model do
 
 
   describe 'user.token' do
-    it 'should require a client_id, display_name, mail, and scope' do
+    it 'should require a client_id, display_name, email, and scope' do
       expect(subject).to respond_to 'token'
       expect{
         subject.token()
@@ -35,16 +38,31 @@ RSpec.describe User, type: :model do
       }.to raise_error(ArgumentError)
       expect{
         subject.token(client_id: consumer.uuid,
-                      mail: mail)
+                      email: email)
       }.to raise_error(ArgumentError)
       expect{
         subject.token(client_id: consumer.uuid,
-                      mail: mail,
+                      email: email,
+                      first_name: first_name)
+      }.to raise_error(ArgumentError)
+      expect{
+        subject.token(client_id: consumer.uuid,
+                      email: email,
+                      first_name: first_name,
+                      last_name: last_name)
+      }.to raise_error(ArgumentError)
+      expect{
+        subject.token(client_id: consumer.uuid,
+                      email: email,
+                      first_name: first_name,
+                      last_name: last_name,
                       display_name: display_name)
       }.to raise_error(ArgumentError)
       expect{
         subject.token(client_id: consumer.uuid,
-                      mail: mail,
+                      email: email,
+                      first_name: first_name,
+                      last_name: last_name,
                       display_name: display_name,
                       scope: scope)
       }.not_to raise_error
@@ -53,7 +71,9 @@ RSpec.describe User, type: :model do
     it 'should create a hex string token, set the value to JSON serialized hash of the user credentials with an expire of 4 hours, and return the generated token' do
       token = subject.token(
             client_id: consumer.uuid,
-            mail: mail,
+            email: email,
+            first_name: first_name,
+            last_name: last_name,
             display_name: display_name,
             scope: scope)
       expect(token).to be
@@ -72,7 +92,9 @@ RSpec.describe User, type: :model do
     let(:token) {
       subject.token(
         client_id: consumer.uuid,
-        mail: mail,
+        email: email,
+        first_name: first_name,
+        last_name: last_name,
         display_name: display_name,
         scope: scope
       )
